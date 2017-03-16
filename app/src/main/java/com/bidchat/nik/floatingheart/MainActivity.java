@@ -76,9 +76,11 @@ public class MainActivity extends AppCompatActivity {
         /**
          * Randow color picker
          */
-        int minArrayIndex = 0;
-        int maxArrayIndex = arrayColors.length - 1;
-        int randomColorIndex = random.nextInt(maxArrayIndex - minArrayIndex) + minArrayIndex;
+        /*
+            int minArrayIndex = 0;
+            int maxArrayIndex = arrayColors.length - 1;
+            int randomColorIndex = random.nextInt(maxArrayIndex - minArrayIndex) + minArrayIndex;
+        */
 
         final ViewGroup rootView = (ViewGroup) findViewById(android.R.id.content);
         ImageView imageHeart = new ImageView(this);
@@ -86,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         imageHeart.setLayoutParams(layoutParamsLeftLetter);
         imageHeart.setAdjustViewBounds(true);
         imageHeart.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_heart));
-        imageHeart.setColorFilter(arrayColors[randomColorIndex]);
+        // imageHeart.setColorFilter(arrayColors[randomColorIndex]);
         rootView.addView(imageHeart);
 
         imageHeart.startAnimation(animationSet);
