@@ -4,6 +4,8 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
@@ -37,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void createFloatingHeart(View view) {
-        int[] arrayColors = getApplicationContext().getResources().getIntArray(R.array.color_array);
 
         AnimationSet animationSet = new AnimationSet(true);
 
@@ -54,7 +55,6 @@ public class MainActivity extends AppCompatActivity {
         int minAngle = -8;
         int maxAngle = 8;
         int randomStartAngle = random.nextInt(maxAngle - minAngle) + minAngle;
-        // int randomEndAngle = random.nextInt(maxAngle - minAngle) + minAngle;
 
         Animation animationRotate = new RotateAnimation(0, randomStartAngle, Animation.RELATIVE_TO_SELF, 0,
                 Animation.RELATIVE_TO_SELF, 1);
@@ -73,22 +73,16 @@ public class MainActivity extends AppCompatActivity {
         animationAlpha.setStartOffset(ANIMATION_TIME - (ANIMATION_TIME / 4));
         animationSet.addAnimation(animationAlpha);
 
-        /**
-         * Randow color picker
-         */
-        /*
-            int minArrayIndex = 0;
-            int maxArrayIndex = arrayColors.length - 1;
-            int randomColorIndex = random.nextInt(maxArrayIndex - minArrayIndex) + minArrayIndex;
-        */
-
         final ViewGroup rootView = (ViewGroup) findViewById(android.R.id.content);
         ImageView imageHeart = new ImageView(this);
-        LinearLayout.LayoutParams layoutParamsLeftLetter = new LinearLayout.LayoutParams(60, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, metrics);
+
+        LinearLayout.LayoutParams layoutParamsLeftLetter = new LinearLayout.LayoutParams(px, ViewGroup.LayoutParams.WRAP_CONTENT);
         imageHeart.setLayoutParams(layoutParamsLeftLetter);
         imageHeart.setAdjustViewBounds(true);
         imageHeart.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_heart));
-        // imageHeart.setColorFilter(arrayColors[randomColorIndex]);
         rootView.addView(imageHeart);
 
         imageHeart.startAnimation(animationSet);
