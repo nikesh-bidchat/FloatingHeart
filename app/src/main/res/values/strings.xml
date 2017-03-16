@@ -1,4 +1,20 @@
 <resources>
     <string name="app_name">FloatingHeart</string>
     <string name="start_heart_animation">Animate</string>
+
+    <array name="color_array">
+        <item>@color/red</item>
+        <item>@color/pink</item>
+        <item>@color/purple</item>
+        <item>@color/indigo</item>
+        <item>@color/blue</item>
+        <item>@color/cyan</item>
+        <item>@color/teal</item>
+        <item>@color/green</item>
+        <item>@color/lime</item>
+        <item>@color/yellow</item>
+        <item>@color/amber</item>
+        <item>@color/orange</item>
+    </array>
+
 </resources>

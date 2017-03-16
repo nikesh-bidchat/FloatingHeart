@@ -37,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void createFloatingHeart(View view) {
+        int[] arrayColors = getApplicationContext().getResources().getIntArray(R.array.color_array);
+
         AnimationSet animationSet = new AnimationSet(true);
 
         Animation animationTranslate = new TranslateAnimation(view.getX(), view.getX(), view.getY(), view.getY() - 800);// fromXDelta, toXDelta, fromYDelta, toYDelta
@@ -71,12 +73,20 @@ public class MainActivity extends AppCompatActivity {
         animationAlpha.setStartOffset(ANIMATION_TIME - (ANIMATION_TIME / 4));
         animationSet.addAnimation(animationAlpha);
 
+        /**
+         * Randow color picker
+         */
+        int minArrayIndex = 0;
+        int maxArrayIndex = arrayColors.length - 1;
+        int randomColorIndex = random.nextInt(maxArrayIndex - minArrayIndex) + minArrayIndex;
+
         final ViewGroup rootView = (ViewGroup) findViewById(android.R.id.content);
         ImageView imageHeart = new ImageView(this);
         LinearLayout.LayoutParams layoutParamsLeftLetter = new LinearLayout.LayoutParams(60, ViewGroup.LayoutParams.WRAP_CONTENT);
         imageHeart.setLayoutParams(layoutParamsLeftLetter);
         imageHeart.setAdjustViewBounds(true);
         imageHeart.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_heart));
+        imageHeart.setColorFilter(arrayColors[randomColorIndex]);
         rootView.addView(imageHeart);
 
         imageHeart.startAnimation(animationSet);
