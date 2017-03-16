@@ -12,5 +12,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
-        android:text="@string/start_heart_animation" />
+        android:text="@string/start_heart_animation"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/image_animate_heart"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:adjustViewBounds="true"
+        android:src="@drawable/ic_empty_heart" />
 </FrameLayout>
