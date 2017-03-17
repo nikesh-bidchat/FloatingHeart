@@ -1,5 +1,6 @@
 package com.bidchat.nik.floatingheart;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.animation.FastOutSlowInInterpolator;
@@ -13,6 +14,7 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.BounceInterpolator;
+import android.view.animation.CycleInterpolator;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
@@ -39,20 +41,19 @@ public class MainActivity extends AppCompatActivity {
         imageAnimateHeart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createFloatingHeart(view);
+                createFloatingHeart(view, getApplicationContext());
             }
         });
         buttonAnimateHeart = (Button) findViewById(R.id.button_animate_heart);
         buttonAnimateHeart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                createFloatingHeart(view);
+                createFloatingHeart(view, getApplicationContext());
             }
         });
     }
 
-    public void createFloatingHeart(View view) {
-        // int[] arrayColors = getApplicationContext().getResources().getIntArray(R.array.color_array);
+    public void createFloatingHeart(View view, Context context) {
         final int scaleUpDuration = 150;
         final int scaleDownDuration = 50;
 
@@ -73,49 +74,42 @@ public class MainActivity extends AppCompatActivity {
         animationScaleDown.setInterpolator(new LinearInterpolator());
         animationSet.addAnimation(animationScaleDown);
 
-        Animation animationTranslate = new TranslateAnimation(view.getX(), view.getX(), view.getY(), view.getY() - (rootView.getHeight() / 1.2f));// fromXDelta, toXDelta, fromYDelta, toYDelta
-        // animationTranslate.setStartOffset(scaleUpDuration + scaleDownDuration);
+        Random random = new Random();
+        /**
+         * To generate a random dispersing value between -150 to 150
+         */
+        int minXDispersePoint = -150;
+        int maxXDispersePoint = 150;
+        int randomXDispersePoint = random.nextInt(maxXDispersePoint - minXDispersePoint) + minXDispersePoint;
+
+        Animation animationTranslate = new TranslateAnimation(view.getX(), view.getX() + randomXDispersePoint, view.getY(), view.getY() - (rootView.getHeight() / 1.2f));// fromXDelta, toXDelta, fromYDelta, toYDelta
         animationTranslate.setFillAfter(true); // Needed to keep the result of the animation
         animationTranslate.setDuration(ANIMATION_TIME);
         animationTranslate.setInterpolator(new LinearInterpolator());
         animationSet.addAnimation(animationTranslate);
 
         /**
-         * To generate a random angle for each floating heart
+         * To generate a random angle for each floating heart between -10 to 10
          */
-        Random random = new Random();
         int minAngle = -10;
         int maxAngle = 10;
         int randomStartAngle = random.nextInt(maxAngle - minAngle) + minAngle;
-        // int randomEndAngle = random.nextInt(maxAngle - minAngle) + minAngle;
 
         Animation animationRotate = new RotateAnimation(0, randomStartAngle, Animation.ABSOLUTE, view.getPivotX(),
                 Animation.ABSOLUTE, view.getPivotY());
-        // animationRotate.setStartOffset(scaleUpDuration + scaleDownDuration);
         animationRotate.setFillAfter(true); // Needed to keep the result of the animation
         animationRotate.setDuration(ANIMATION_TIME / NUMBER_OF_CYCLES);
         animationRotate.setRepeatCount(Animation.INFINITE);
         animationRotate.setRepeatMode(Animation.REVERSE);
-        animationRotate.setInterpolator(new FastOutSlowInInterpolator());
+        animationRotate.setInterpolator(new CycleInterpolator(Animation.INFINITE));
         animationSet.addAnimation(animationRotate);
 
         Animation animationAlpha = new AlphaAnimation(1, 0);// fromAlpha, toAlpha
-        // animationAlpha.setStartOffset(scaleUpDuration + scaleDownDuration);
         animationAlpha.setFillAfter(true); // Needed to keep the result of the animation
         animationAlpha.setDuration(ANIMATION_TIME / NUMBER_OF_CYCLES);
         animationAlpha.setInterpolator(new LinearInterpolator());
         animationAlpha.setStartOffset((ANIMATION_TIME - (ANIMATION_TIME / NUMBER_OF_CYCLES)));
         animationSet.addAnimation(animationAlpha);
-
-        /**
-         * Randow color picker
-         */
-
-        /**
-         * int minArrayIndex = 0;
-         * int maxArrayIndex = arrayColors.length - 1;
-         * int randomColorIndex = random.nextInt(maxArrayIndex - minArrayIndex) + minArrayIndex;
-         */
 
         ImageView imageHeart = new ImageView(this);
         Resources r = getResources();
@@ -123,8 +117,7 @@ public class MainActivity extends AppCompatActivity {
         LinearLayout.LayoutParams layoutParamsLeftLetter = new LinearLayout.LayoutParams(px, ViewGroup.LayoutParams.WRAP_CONTENT);
         imageHeart.setLayoutParams(layoutParamsLeftLetter);
         imageHeart.setAdjustViewBounds(true);
-        imageHeart.setImageDrawable(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_heart));
-        // imageHeart.setColorFilter(arrayColors[randomColorIndex]);
+        imageHeart.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_heart));
         rootView.addView(imageHeart);
 
         imageHeart.startAnimation(animationSet);
