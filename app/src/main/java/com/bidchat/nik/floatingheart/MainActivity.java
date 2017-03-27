@@ -2,12 +2,12 @@ package com.bidchat.nik.floatingheart;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.view.animation.FastOutSlowInInterpolator;
-import android.support.v7.app.AppCompatActivity;
+import android.graphics.Point;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
+import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         imageAnimateHeart = (ImageView) findViewById(R.id.image_animate_heart);
         imageAnimateHeart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,10 +77,13 @@ public class MainActivity extends AppCompatActivity {
 
         Random random = new Random();
         /**
-         * To generate a random dispersing value between -150 to 150
+         * To generate a random dispersing value between -10 to width of screen
          */
-        int minXDispersePoint = -150;
-        int maxXDispersePoint = 150;
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int minXDispersePoint = 10;
+        int maxXDispersePoint = (size.x - view.getWidth() - 1);
         int randomXDispersePoint = random.nextInt(maxXDispersePoint - minXDispersePoint) + minXDispersePoint;
 
         Animation animationTranslate = new TranslateAnimation(view.getX(), view.getX() + randomXDispersePoint, view.getY(), view.getY() - (rootView.getHeight() / 1.2f));// fromXDelta, toXDelta, fromYDelta, toYDelta
@@ -89,13 +93,13 @@ public class MainActivity extends AppCompatActivity {
         animationSet.addAnimation(animationTranslate);
 
         /**
-         * To generate a random angle for each floating heart between -10 to 10
+         * To generate a random angle for each floating heart between -10 to -1
          */
         int minAngle = -10;
-        int maxAngle = 10;
+        int maxAngle = -1;
         int randomStartAngle = random.nextInt(maxAngle - minAngle) + minAngle;
 
-        Animation animationRotate = new RotateAnimation(0, randomStartAngle, Animation.ABSOLUTE, view.getPivotX(),
+        Animation animationRotate = new RotateAnimation(-1, randomStartAngle, Animation.ABSOLUTE, view.getPivotX(),
                 Animation.ABSOLUTE, view.getPivotY());
         animationRotate.setFillAfter(true); // Needed to keep the result of the animation
         animationRotate.setDuration(ANIMATION_TIME / NUMBER_OF_CYCLES);
@@ -119,7 +123,6 @@ public class MainActivity extends AppCompatActivity {
         imageHeart.setAdjustViewBounds(true);
         imageHeart.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_heart));
         rootView.addView(imageHeart);
-
         imageHeart.startAnimation(animationSet);
     }
 }
