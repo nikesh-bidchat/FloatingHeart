@@ -26,12 +26,10 @@ import android.widget.LinearLayout;
 import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
-    public final String TAG = getClass().getCanonicalName();
-    private static int ANIMATION_TIME = 4000;
-    private static int ONE_CYCLE_TIME = 1000;
-    private static int NUMBER_OF_CYCLES = ANIMATION_TIME / ONE_CYCLE_TIME;
+    // public final String TAG = getClass().getCanonicalName();
     ImageView imageAnimateHeart;
     Button buttonAnimateHeart;
+    int minAngle, maxAngle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,29 +75,33 @@ public class MainActivity extends AppCompatActivity {
 
         Random random = new Random();
         /**
-         * To generate a random dispersing value between -10 to width of screen
+         * To generate a random dispersing value between 0 to width of screen
          */
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
-        int minXDispersePoint = 10;
-        int maxXDispersePoint = (size.x - view.getWidth() - 1);
+
+        final int NUMBER_OF_CYCLES = 4;
+        final int DIP_COVERED_PER_CYCLE = (size.y / 2) / NUMBER_OF_CYCLES;
+        final int ANIMATION_TIME = (((size.y / 2)) / DIP_COVERED_PER_CYCLE) * 500;
+
+        int minXDispersePoint = -(int) view.getX();
+        int maxXDispersePoint = (int) (size.x - (view.getX() + view.getWidth()));
         int randomXDispersePoint = random.nextInt(maxXDispersePoint - minXDispersePoint) + minXDispersePoint;
 
-        Animation animationTranslate = new TranslateAnimation(view.getX(), view.getX() + randomXDispersePoint, view.getY(), view.getY() - (rootView.getHeight() / 1.2f));// fromXDelta, toXDelta, fromYDelta, toYDelta
+        Animation animationTranslate = new TranslateAnimation(view.getX(), view.getX() + randomXDispersePoint, view.getY(), view.getY() - (rootView.getHeight() / 2f));// fromXDelta, toXDelta, fromYDelta, toYDelta
         animationTranslate.setFillAfter(true); // Needed to keep the result of the animation
         animationTranslate.setDuration(ANIMATION_TIME);
         animationTranslate.setInterpolator(new LinearInterpolator());
         animationSet.addAnimation(animationTranslate);
 
         /**
-         * To generate a random angle for each floating heart between -10 to -1
+         * To generate a random angle for each floating heart between -8 to 8
          */
-        int minAngle = -10;
-        int maxAngle = -1;
+        determineAngle(minXDispersePoint, maxXDispersePoint);
         int randomStartAngle = random.nextInt(maxAngle - minAngle) + minAngle;
 
-        Animation animationRotate = new RotateAnimation(-1, randomStartAngle, Animation.ABSOLUTE, view.getPivotX(),
+        Animation animationRotate = new RotateAnimation(0, randomStartAngle, Animation.ABSOLUTE, view.getPivotX(),
                 Animation.ABSOLUTE, view.getPivotY());
         animationRotate.setFillAfter(true); // Needed to keep the result of the animation
         animationRotate.setDuration(ANIMATION_TIME / NUMBER_OF_CYCLES);
@@ -110,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
 
         Animation animationAlpha = new AlphaAnimation(1, 0);// fromAlpha, toAlpha
         animationAlpha.setFillAfter(true); // Needed to keep the result of the animation
-        animationAlpha.setDuration(ANIMATION_TIME / NUMBER_OF_CYCLES);
+        animationAlpha.setDuration(ANIMATION_TIME / (int) (NUMBER_OF_CYCLES - 0.5));
         animationAlpha.setInterpolator(new LinearInterpolator());
         animationAlpha.setStartOffset((ANIMATION_TIME - (ANIMATION_TIME / NUMBER_OF_CYCLES)));
         animationSet.addAnimation(animationAlpha);
@@ -122,7 +124,28 @@ public class MainActivity extends AppCompatActivity {
         imageHeart.setLayoutParams(layoutParamsLeftLetter);
         imageHeart.setAdjustViewBounds(true);
         imageHeart.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_heart));
+        imageHeart.setAlpha(0.8f);
         rootView.addView(imageHeart);
         imageHeart.startAnimation(animationSet);
+    }
+
+    /**
+     * @param x1 - left end disperse point
+     * @param x2 - right disperse point
+     */
+    public void determineAngle(int x1, int x2) {
+        if (x1 == 0 || x1 > (-20)) {
+            minAngle = -8;
+            maxAngle = -1;
+        } else if (x2 == 0 || x2 < (20)) {
+            minAngle = 1;
+            maxAngle = 8;
+        } else if (-(x1) < x2) {
+            minAngle = -4;
+            maxAngle = 8;
+        } else {
+            minAngle = -8;
+            maxAngle = 4;
+        }
     }
 }
