@@ -6,6 +6,7 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
@@ -30,11 +31,14 @@ public class MainActivity extends AppCompatActivity {
     ImageView imageAnimateHeart;
     Button buttonAnimateHeart;
     int minAngle, maxAngle;
+    ViewGroup rootView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        rootView = (ViewGroup) findViewById(android.R.id.content);
 
         imageAnimateHeart = (ImageView) findViewById(R.id.image_animate_heart);
         imageAnimateHeart.setOnClickListener(new View.OnClickListener() {
@@ -56,8 +60,6 @@ public class MainActivity extends AppCompatActivity {
         final int scaleUpDuration = 150;
         final int scaleDownDuration = 50;
 
-        final ViewGroup rootView = (ViewGroup) findViewById(android.R.id.content);
-
         AnimationSet animationSet = new AnimationSet(true);
 
         Animation animationScaleUp = new ScaleAnimation(0f, 1.2f, 0f, 1.2f, view.getPivotX(), view.getPivotY());//  fromX,  toX,  fromY,  toY,  pivotX,  pivotY
@@ -74,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         animationSet.addAnimation(animationScaleDown);
 
         Random random = new Random();
-        /**
+        /*
          * To generate a random dispersing value between 0 to width of screen
          */
         Display display = getWindowManager().getDefaultDisplay();
@@ -95,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
         animationTranslate.setInterpolator(new LinearInterpolator());
         animationSet.addAnimation(animationTranslate);
 
-        /**
+        /*
          * To generate a random angle for each floating heart between -8 to 8
          */
         determineAngle(minXDispersePoint, maxXDispersePoint);
@@ -110,12 +112,11 @@ public class MainActivity extends AppCompatActivity {
         animationRotate.setInterpolator(new CycleInterpolator(Animation.INFINITE));
         animationSet.addAnimation(animationRotate);
 
-        Animation animationAlpha = new AlphaAnimation(1, 0);// fromAlpha, toAlpha
+        final Animation animationAlpha = new AlphaAnimation(1, 0);// fromAlpha, toAlpha
         animationAlpha.setFillAfter(true); // Needed to keep the result of the animation
         animationAlpha.setDuration(ANIMATION_TIME / (int) (NUMBER_OF_CYCLES - 0.5));
         animationAlpha.setInterpolator(new LinearInterpolator());
         animationAlpha.setStartOffset((ANIMATION_TIME - (ANIMATION_TIME / NUMBER_OF_CYCLES)));
-        animationSet.addAnimation(animationAlpha);
 
         ImageView imageHeart = new ImageView(this);
         Resources r = getResources();
@@ -126,6 +127,11 @@ public class MainActivity extends AppCompatActivity {
         imageHeart.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_heart));
         imageHeart.setAlpha(0.8f);
         rootView.addView(imageHeart);
+
+        CustomAnimationListener customAnimationListener = new CustomAnimationListener();
+        customAnimationListener.setImage(animationSet, imageHeart);
+        animationAlpha.setAnimationListener(customAnimationListener);
+        animationSet.addAnimation(animationAlpha);
         imageHeart.startAnimation(animationSet);
     }
 
@@ -146,6 +152,35 @@ public class MainActivity extends AppCompatActivity {
         } else {
             minAngle = -8;
             maxAngle = 4;
+        }
+    }
+
+    private class CustomAnimationListener implements Animation.AnimationListener {
+        ImageView view;
+        AnimationSet animationSet;
+
+        void setImage(AnimationSet animationSet, ImageView view) {
+            this.animationSet = animationSet;
+            this.view = view;
+        }
+
+        public void onAnimationEnd(Animation animation) {
+            rootView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    view.clearAnimation();
+                    animationSet = null;
+                    rootView.removeView(view);
+                    view = null;
+                    System.gc();
+                }
+            }, 0);
+        }
+
+        public void onAnimationRepeat(Animation animation) {
+        }
+
+        public void onAnimationStart(Animation animation) {
         }
     }
 }
