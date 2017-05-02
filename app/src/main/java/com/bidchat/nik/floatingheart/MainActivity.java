@@ -6,7 +6,6 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
@@ -15,12 +14,11 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.BounceInterpolator;
-import android.view.animation.CycleInterpolator;
 import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -47,6 +45,14 @@ public class MainActivity extends AppCompatActivity {
                 createFloatingHeart(view, getApplicationContext());
             }
         });
+
+        FrameLayout activityMain = (FrameLayout) findViewById(R.id.activity_main);
+        activityMain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                createFloatingHeart(imageAnimateHeart, getApplicationContext());
+            }
+        });
         buttonAnimateHeart = (Button) findViewById(R.id.button_animate_heart);
         buttonAnimateHeart.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,7 +68,13 @@ public class MainActivity extends AppCompatActivity {
 
         AnimationSet animationSet = new AnimationSet(true);
 
-        Animation animationScaleUp = new ScaleAnimation(0f, 1.2f, 0f, 1.2f, view.getPivotX(), view.getPivotY());//  fromX,  toX,  fromY,  toY,  pivotX,  pivotY
+        Random random = new Random();
+
+        int minXPivot = 0;
+        int maxXPivot = view.getWidth();
+        int randomPivot = random.nextInt(maxXPivot - minXPivot) + minXPivot;
+
+        Animation animationScaleUp = new ScaleAnimation(0f, 1.2f, 0f, 1.2f, randomPivot, randomPivot);//  fromX,  toX,  fromY,  toY,  pivotX,  pivotY
         animationScaleUp.setFillAfter(false);
         animationScaleUp.setDuration(scaleUpDuration);
         animationScaleUp.setInterpolator(new BounceInterpolator());
@@ -75,7 +87,6 @@ public class MainActivity extends AppCompatActivity {
         animationScaleDown.setInterpolator(new LinearInterpolator());
         animationSet.addAnimation(animationScaleDown);
 
-        Random random = new Random();
         /*
          * To generate a random dispersing value between 0 to width of screen
          */
@@ -85,10 +96,11 @@ public class MainActivity extends AppCompatActivity {
 
         final int NUMBER_OF_CYCLES = 4;
         final int DIP_COVERED_PER_CYCLE = (size.y / 2) / NUMBER_OF_CYCLES;
-        final int ANIMATION_TIME = (((size.y / 2)) / DIP_COVERED_PER_CYCLE) * 500;
+        final int ANIMATION_TIME = (((size.y / 2)) / DIP_COVERED_PER_CYCLE) * 350;
 
         int minXDispersePoint = -(int) view.getX();
-        int maxXDispersePoint = (int) (size.x - (view.getX() + view.getWidth()));
+        // int maxXDispersePoint = (int) (size.x - (view.getX() + view.getWidth()));
+        int maxXDispersePoint = (size.x / 3);
         int randomXDispersePoint = random.nextInt(maxXDispersePoint - minXDispersePoint) + minXDispersePoint;
 
         Animation animationTranslate = new TranslateAnimation(view.getX(), view.getX() + randomXDispersePoint, view.getY(), view.getY() - (rootView.getHeight() / 2f));// fromXDelta, toXDelta, fromYDelta, toYDelta
@@ -103,6 +115,7 @@ public class MainActivity extends AppCompatActivity {
         determineAngle(minXDispersePoint, maxXDispersePoint);
         int randomStartAngle = random.nextInt(maxAngle - minAngle) + minAngle;
 
+        /*
         Animation animationRotate = new RotateAnimation(0, randomStartAngle, Animation.ABSOLUTE, view.getPivotX(),
                 Animation.ABSOLUTE, view.getPivotY());
         animationRotate.setFillAfter(true); // Needed to keep the result of the animation
@@ -111,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
         animationRotate.setRepeatMode(Animation.REVERSE);
         animationRotate.setInterpolator(new CycleInterpolator(Animation.INFINITE));
         animationSet.addAnimation(animationRotate);
+        */
 
         final Animation animationAlpha = new AlphaAnimation(1, 0);// fromAlpha, toAlpha
         animationAlpha.setFillAfter(true); // Needed to keep the result of the animation
@@ -141,17 +155,17 @@ public class MainActivity extends AppCompatActivity {
      */
     public void determineAngle(int x1, int x2) {
         if (x1 == 0 || x1 > (-20)) {
-            minAngle = -8;
+            minAngle = -2;
             maxAngle = -1;
         } else if (x2 == 0 || x2 < (20)) {
             minAngle = 1;
-            maxAngle = 8;
+            maxAngle = 2;
         } else if (-(x1) < x2) {
-            minAngle = -4;
-            maxAngle = 8;
+            minAngle = -1;
+            maxAngle = 2;
         } else {
-            minAngle = -8;
-            maxAngle = 4;
+            minAngle = -2;
+            maxAngle = 1;
         }
     }
 

@@ -21,5 +21,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:adjustViewBounds="true"
-        android:src="@drawable/ic_empty_heart" />
+        android:src="@drawable/ic_empty_heart"
+        android:visibility="invisible" />
 </FrameLayout>
