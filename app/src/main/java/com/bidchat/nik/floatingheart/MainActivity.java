@@ -6,6 +6,7 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
 import android.view.View;
@@ -30,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
     Button buttonAnimateHeart;
     int minAngle, maxAngle;
     ViewGroup rootView;
+
+    int minXDispersePoint;
+    int maxXDispersePoint;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,33 +102,14 @@ public class MainActivity extends AppCompatActivity {
         final int DIP_COVERED_PER_CYCLE = (size.y / 2) / NUMBER_OF_CYCLES;
         final int ANIMATION_TIME = (((size.y / 2)) / DIP_COVERED_PER_CYCLE) * 350;
 
-        int minXDispersePoint = -(int) view.getX();
-        // int maxXDispersePoint = (int) (size.x - (view.getX() + view.getWidth()));
-        int maxXDispersePoint = (size.x / 3);
+        determineXDispersePoint((int) view.getX() + (view.getWidth() / 2), size.x - view.getWidth());
         int randomXDispersePoint = random.nextInt(maxXDispersePoint - minXDispersePoint) + minXDispersePoint;
 
-        Animation animationTranslate = new TranslateAnimation(view.getX(), view.getX() + randomXDispersePoint, view.getY(), view.getY() - (rootView.getHeight() / 2f));// fromXDelta, toXDelta, fromYDelta, toYDelta
+        Animation animationTranslate = new TranslateAnimation(view.getX(), randomXDispersePoint, view.getY(), view.getY() - (rootView.getHeight() / 2f));// fromXDelta, toXDelta, fromYDelta, toYDelta
         animationTranslate.setFillAfter(true); // Needed to keep the result of the animation
         animationTranslate.setDuration(ANIMATION_TIME);
         animationTranslate.setInterpolator(new LinearInterpolator());
         animationSet.addAnimation(animationTranslate);
-
-        /*
-         * To generate a random angle for each floating heart between -8 to 8
-         */
-        determineAngle(minXDispersePoint, maxXDispersePoint);
-        int randomStartAngle = random.nextInt(maxAngle - minAngle) + minAngle;
-
-        /*
-        Animation animationRotate = new RotateAnimation(0, randomStartAngle, Animation.ABSOLUTE, view.getPivotX(),
-                Animation.ABSOLUTE, view.getPivotY());
-        animationRotate.setFillAfter(true); // Needed to keep the result of the animation
-        animationRotate.setDuration(ANIMATION_TIME / NUMBER_OF_CYCLES);
-        animationRotate.setRepeatCount(Animation.INFINITE);
-        animationRotate.setRepeatMode(Animation.REVERSE);
-        animationRotate.setInterpolator(new CycleInterpolator(Animation.INFINITE));
-        animationSet.addAnimation(animationRotate);
-        */
 
         final Animation animationAlpha = new AlphaAnimation(1, 0);// fromAlpha, toAlpha
         animationAlpha.setFillAfter(true); // Needed to keep the result of the animation
@@ -150,22 +135,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * @param x1 - left end disperse point
-     * @param x2 - right disperse point
+     * @param x     - location of the image
+     * @param width - width of screen
      */
-    public void determineAngle(int x1, int x2) {
-        if (x1 == 0 || x1 > (-20)) {
-            minAngle = -2;
-            maxAngle = -1;
-        } else if (x2 == 0 || x2 < (20)) {
-            minAngle = 1;
-            maxAngle = 2;
-        } else if (-(x1) < x2) {
-            minAngle = -1;
-            maxAngle = 2;
+    public void determineXDispersePoint(int x, int width) {
+        if (width - x < x) {
+            minXDispersePoint = x - 100;
+            if (width - x < 100) {
+                maxXDispersePoint = width;
+            } else {
+                Log.d("Location", "You are here");
+                maxXDispersePoint = x + 100;
+            }
         } else {
-            minAngle = -2;
-            maxAngle = 1;
+            maxXDispersePoint = x + 100;
+            if (x - 100 < 0) {
+                minXDispersePoint = 0;
+            } else {
+                minXDispersePoint = x - 100;
+            }
         }
     }
 

@@ -19,7 +19,7 @@
         android:id="@+id/image_animate_heart"
         android:layout_width="40dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
+        android:layout_gravity="bottom|center_horizontal"
         android:adjustViewBounds="true"
         android:src="@drawable/ic_empty_heart"
         android:visibility="invisible" />
